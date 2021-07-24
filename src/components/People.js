@@ -1,27 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import { fetchData } from "../utils/api";
 
 const People = () => {
   const [page, setPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
 
   const { isLoading, error, data } = useQuery(
-    ["people", page],
-    () => fetchData(`https://swapi.dev/api/people/?page=${page}`),
+    ["people", page, searchText],
+    () =>
+      fetchData(
+        `https://swapi.dev/api/people/?${
+          searchText ? "search=" + searchText : "page=" + page
+        }`
+      ),
     {
       keepPreviousData: true,
     }
   );
+
+  const updateCharacters = (args) => {
+    const searchKey = args?.target.value.toLowerCase();
+    console.log("searchKey", searchKey);
+    setSearchText(searchKey);
+  };
+
+  const debounce = function (fn, d) {
+    let timerId;
+    return function () {
+      const context = this,
+        args = arguments;
+      clearTimeout(timerId);
+      timerId = setTimeout(function () {
+        fn.apply(context, args);
+      }, d);
+    };
+  };
+
+  const debounceSearch = debounce(updateCharacters, 300);
 
   return (
     <div className="card h-3/4 md:h-1/2 overflow-auto">
       <h1 className="sticky top-0 text-center bg-[#80afe7] p-2 m-0 text-2xl">
         Starwars Characters
       </h1>
+      <div className="w-full px-4 my-2">
+        <input
+          onKeyUp={debounceSearch}
+          className="flex justify-center w-full rounded-lg py-2 text-center"
+          type="text"
+          placeholder="Search by name"
+        />
+      </div>
       {error && <p>Error: {error}</p>}
       {isLoading && <p>Loading...</p>}
-      {data?.results.map((character) => (
+      {data?.results?.map((character) => (
         <Link to={`people/${character.url.split("/").slice(-2)[0]}`}>
           <div
             key={character.name}
