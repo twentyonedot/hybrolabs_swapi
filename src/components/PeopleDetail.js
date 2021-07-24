@@ -13,7 +13,7 @@ const PeopleDetail = () => {
       keepPreviousData: true,
     }
   );
-  console.log(data);
+
   return (
     <div className="card">
       {error && <p>Error: {error}</p>}
@@ -22,10 +22,10 @@ const PeopleDetail = () => {
         <>
           <div className="px-4 py-2">
             <h1 className="text-2xl font-bold">{data.name}</h1>
-            <div className="flex my-4">
-              <p className="badge">{data.gender.toUpperCase()}</p>
-              <p className="badge">{data.mass}kg</p>
-              <p className="badge">{data.height}cm</p>
+            <div className="badges flex my-4">
+              <p>{data.gender.toUpperCase()}</p>
+              <p>{data.mass}kg</p>
+              <p>{data.height}cm</p>
             </div>
             <div className="my-2">
               <h2 className="font-semibold">Vehicles: </h2>
